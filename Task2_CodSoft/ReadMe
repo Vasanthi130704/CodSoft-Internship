@@ -1,4 +1,5 @@
 ## *Important Note* ##
 
 Datasets and trained model files are not uploaded due to GitHub file size limitations.  
+For Dataset visit Kaggle : https://www.kaggle.com/datasets/kartik2112/fraud-detection
 You can train the model again using the provided training scripts.
