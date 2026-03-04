@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Credit Card Fraud Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="container">
+
+    <h2> Credit Card Fraud Detection </h2>
+
+    <form action="/predict" method="post">
+
+        <label>Step</label>
+        <input type="text" name="step" placeholder="Enter step value" required>
+
+        <label>Transaction Type</label>
+        <select name="type" required>
+            <option value="CASH_OUT">CASH_OUT</option>
+            <option value="PAYMENT">PAYMENT</option>
+            <option value="TRANSFER">TRANSFER</option>
+            <option value="DEBIT">DEBIT</option>
+        </select>
+
+        <label>Amount</label>
+        <input type="text" name="amount" placeholder="Enter transaction amount" required>
+
+        <label>Old Balance (Origin)</label>
+        <input type="text" name="oldbalanceOrg" placeholder="Old balance of sender" required>
+
+        <label>New Balance (Origin)</label>
+        <input type="text" name="newbalanceOrig" placeholder="New balance of sender" required>
+
+        <label>Old Balance (Destination)</label>
+        <input type="text" name="oldbalanceDest" placeholder="Old balance of receiver" required>
+
+        <label>New Balance (Destination)</label>
+        <input type="text" name="newbalanceDest" placeholder="New balance of receiver" required>
+
+        <button type="submit">Predict</button>
+
+    </form>
+
+    {% if prediction_text %}
+        <div class="result">
+            {{ prediction_text }}
+        </div>
+    {% endif %}
+
+</div>
+</body>
+</html>
