@@ -13,15 +13,21 @@ from sklearn.ensemble import RandomForestClassifier
 from src.preprocess import load_data, preprocess_data
 # These functions are imported from the preprocess module,
 # which we created to handle data loading and preprocessing tasks.
+import pandas as pd
+# pandas is a powerful data manipulation library that provides data structures and functions
 
 # Get project root directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Correct dataset path
+# Dataset path
 DATA_PATH = os.path.join(BASE_DIR, "dataset", "fraudTrain.csv")
 
-# Load dataset
-df = load_data(DATA_PATH)
+print("Loading dataset...")
+
+# Load only 20,000 rows instead of full dataset
+df = pd.read_csv(DATA_PATH, nrows=500)
+
+print("Dataset loaded:", df.shape)
 
 # Preprocess
 X, y, scaler, feature_names = preprocess_data(df)
@@ -36,8 +42,20 @@ model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
 
 # Save model
-pickle.dump(model, open("../model/model.pkl", "wb"))
-pickle.dump(scaler, open("../model/scaler.pkl", "wb"))
-pickle.dump(feature_names, open("../model/features.pkl", "wb"))
+# Model folder path
+MODEL_DIR = os.path.join(BASE_DIR, "model")
+
+# Ensure folder exists
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+# File paths
+MODEL_PATH = os.path.join(MODEL_DIR, "model.pkl")
+SCALER_PATH = os.path.join(MODEL_DIR, "scaler.pkl")
+FEATURE_PATH = os.path.join(MODEL_DIR, "features.pkl")
+
+# Save files
+pickle.dump(model, open(MODEL_PATH, "wb"))
+pickle.dump(scaler, open(SCALER_PATH, "wb"))
+pickle.dump(feature_names, open(FEATURE_PATH, "wb"))
 
 print("✅ Model trained and saved successfully!")
