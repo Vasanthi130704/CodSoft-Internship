@@ -1,12 +1,24 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, StandardScaler 
-# LabelEncoder is used to convert categorical variables into numerical format,
-# while StandardScaler is used to standardize features by removing the mean and scaling to unit variance, which is important for many machine learning algorithms to perform well.
+import numpy as np
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-def load_data(path): # This function takes a file path as input and uses pandas to read a CSV file from that path, returning the resulting DataFrame. It is used to load the dataset for training and prediction.
+
+def load_data(path):
+    """
+    Load dataset from CSV file
+    """
     return pd.read_csv(path)
 
-def preprocess_data(df): # This function takes a DataFrame as input and performs several preprocessing steps to prepare the data for machine learning. It drops unnecessary columns, encodes categorical variables, separates features and target variable, and scales the features using StandardScaler. It returns the processed features, target variable, fitted scaler, and the names of the feature columns.
+
+def preprocess_data(df):
+    """
+    Preprocess the fraud dataset:
+    - Drop unnecessary columns
+    - Encode categorical features
+    - Create new fraud detection features
+    - Scale features
+    """
+
     # Drop unnecessary columns
     df = df.drop([
         "trans_date_trans_time",
@@ -19,21 +31,37 @@ def preprocess_data(df): # This function takes a DataFrame as input and performs
         "zip",
         "dob",
         "trans_num"
-    ], axis=1)
+    ], axis=1, errors="ignore")
 
-    # Encode categorical columns
+    # Feature Engineering
+    # Distance between customer and merchant
+    df["distance"] = np.sqrt(
+        (df["lat"] - df["merch_lat"])**2 +
+        (df["long"] - df["merch_long"])**2
+    )
+
+    # Transaction hour
+    df["hour"] = pd.to_datetime(df["unix_time"], unit="s").dt.hour
+
+    # Encode categorical data
     categorical_cols = ["merchant", "category", "gender", "job"]
 
-    le = LabelEncoder()
+    encoders = {}
+
     for col in categorical_cols:
+        le = LabelEncoder()
         df[col] = le.fit_transform(df[col])
+        encoders[col] = le
+
 
     # Features & target
     X = df.drop("is_fraud", axis=1)
     y = df["is_fraud"]
 
-    # Scale features
+    feature_names = X.columns
+
+    # Scaling
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    return X_scaled, y, scaler, X.columns
+    return X_scaled, y, scaler, feature_names, encoders
