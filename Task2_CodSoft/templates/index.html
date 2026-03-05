@@ -1,53 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Credit Card Fraud Detection</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>Credit Card Fraud Detection</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f2f2f2;
+text-align:center;
+}
+
+.container{
+width:500px;
+margin:auto;
+background:white;
+padding:30px;
+margin-top:50px;
+border-radius:10px;
+box-shadow:0px 0px 10px gray;
+}
+
+h1{
+color:#333;
+}
+
+input,select{
+width:90%;
+padding:10px;
+margin:10px;
+border-radius:5px;
+border:1px solid gray;
+}
+
+button{
+padding:12px 20px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+.result{
+margin-top:20px;
+font-size:20px;
+font-weight:bold;
+}
+
+</style>
+
 </head>
 
 <body>
+
 <div class="container">
 
-    <h2> Credit Card Fraud Detection </h2>
+<h1>💳 Credit Card Fraud Detection</h1>
 
-    <form action="/predict" method="post">
+<form action="/predict" method="post">
 
-        <label>Step</label>
-        <input type="text" name="step" placeholder="Enter step value" required>
+<input type="number" name="amt" placeholder="Transaction Amount" required>
 
-        <label>Transaction Type</label>
-        <select name="type" required>
-            <option value="CASH_OUT">CASH_OUT</option>
-            <option value="PAYMENT">PAYMENT</option>
-            <option value="TRANSFER">TRANSFER</option>
-            <option value="DEBIT">DEBIT</option>
-        </select>
+<select name="gender">
+<option value="M">Male</option>
+<option value="F">Female</option>
+</select>
 
-        <label>Amount</label>
-        <input type="text" name="amount" placeholder="Enter transaction amount" required>
+<input type="number" name="city_pop" placeholder="City Population" required>
 
-        <label>Old Balance (Origin)</label>
-        <input type="text" name="oldbalanceOrg" placeholder="Old balance of sender" required>
+<input type="text" name="lat" placeholder="Customer Latitude" required>
 
-        <label>New Balance (Origin)</label>
-        <input type="text" name="newbalanceOrig" placeholder="New balance of sender" required>
+<input type="text" name="long" placeholder="Customer Longitude" required>
 
-        <label>Old Balance (Destination)</label>
-        <input type="text" name="oldbalanceDest" placeholder="Old balance of receiver" required>
+<input type="text" name="merch_lat" placeholder="Merchant Latitude" required>
 
-        <label>New Balance (Destination)</label>
-        <input type="text" name="newbalanceDest" placeholder="New balance of receiver" required>
+<input type="text" name="merch_long" placeholder="Merchant Longitude" required>
 
-        <button type="submit">Predict</button>
+<input type="number" name="unix_time" placeholder="Unix Time" required>
 
-    </form>
+<button type="submit">Predict Transaction</button>
 
-    {% if prediction_text %}
-        <div class="result">
-            {{ prediction_text }}
-        </div>
-    {% endif %}
+</form>
+
+<div class="result">
+{{ prediction_text }}
+</div>
 
 </div>
+
 </body>
 </html>
