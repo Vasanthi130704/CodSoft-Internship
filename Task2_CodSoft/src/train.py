@@ -3,11 +3,31 @@ import pickle
 import pandas as pd
 import numpy as np
 
+from math import radians, sin, cos, sqrt, atan2
+
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 from imblearn.over_sampling import SMOTE
+
+
+# HAVERSINE FUNCTION TO CALCULATE DISTANCE BETWEEN TWO POINTS ON EARTH
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371  # Earth radius in km
+
+    lat1 = radians(lat1)
+    lon1 = radians(lon1)
+    lat2 = radians(lat2)
+    lon2 = radians(lon2)
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    return R * c
 
 # Project Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,14 +38,20 @@ print("Loading dataset...")
 df = pd.read_csv(DATA_PATH)
 
 print("Dataset loaded:", df.shape)
+
 # Encode gender
 df["gender"] = df["gender"].map({"M": 0, "F": 1})
 
-# FEATURE ENGINEERING
-# Distance between customer and merchant
-df["distance"] = np.sqrt(
-    (df["lat"] - df["merch_lat"])**2 +
-    (df["long"] - df["merch_long"])**2
+#FEATURE ENGINEERING
+# Distance using HAVERSINE formula
+df["distance"] = df.apply(
+    lambda row: haversine(
+        row["lat"],
+        row["long"],
+        row["merch_lat"],
+        row["merch_long"]
+    ),
+    axis=1
 )
 
 # Transaction hour
@@ -51,6 +77,7 @@ y = df["is_fraud"]
 print("\nClass distribution BEFORE balancing:")
 print(y.value_counts())
 
+
 # Train Test Split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y,
@@ -60,7 +87,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # Handle Imbalanced Data
-
 smote = SMOTE(random_state=42)
 
 X_train_smote, y_train_smote = smote.fit_resample(X_train, y_train)

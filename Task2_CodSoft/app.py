@@ -35,10 +35,7 @@ def home():
 def predict():
     try:
 
-        # -------------------------
         # Get form inputs
-        # -------------------------
-
         amt = float(request.form.get("amt"))
         gender = request.form.get("gender")
         city_pop = float(request.form.get("city_pop"))
@@ -51,10 +48,7 @@ def predict():
         # Encode gender
         gender_val = 1 if gender == "F" else 0
 
-        # -------------------------
         # Feature Engineering
-        # -------------------------
-
         # Distance between customer & merchant
         distance = np.sqrt(
             (lat - merch_lat) ** 2 +
@@ -63,11 +57,7 @@ def predict():
 
         # Transaction hour
         hour = pd.to_datetime(unix_time, unit="s").hour
-
-        # -------------------------
         # Create dataframe
-        # -------------------------
-
         data = {
             "amt": amt,
             "gender": gender_val,
@@ -93,7 +83,7 @@ def predict():
         fraud_prob = model.predict_proba(scaled)[0][1]
 
         # Decision threshold
-        if fraud_prob > 0.35:
+        if fraud_prob > 0.21:
             result = f"Fraudulent Transaction ❌ (Probability: {fraud_prob:.2f})"
         else:
             result = f"Legitimate Transaction ✅ (Probability: {fraud_prob:.2f})"
